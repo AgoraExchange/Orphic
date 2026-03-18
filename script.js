@@ -90,8 +90,8 @@
     exploreNonTradable: exploreNonTradableDefaults,
     historyItems: historyDefaults,
     user: {
-      name: "Operator",
-      email: "name@astervault.io",
+      name: "Richie",
+      email: "richie2broke@proton.me",
       loggedIn: false
     },
     wallet: {
@@ -1036,4 +1036,82 @@
   }
 
   init();
+
+  /* ===== PATCH: timed notification pop-up ===== */
+const timedBannerPool = [
+  {
+    title: "Did you know?",
+    text: "Market screeners can help uncover strong momentum names before the crowd catches on.",
+    cta: "Explore momentum picks"
+  },
+  {
+    title: "Portfolio Insight",
+    text: "Your watchlist can be used to track fast movers across crypto, equities, and ETFs.",
+    cta: "View watchlist ideas"
+  },
+  {
+    title: "Trending Now",
+    text: "Some investors are rotating into high-beta names and digital assets with stronger recent volume.",
+    cta: "Explore trending markets"
+  },
+  {
+    title: "Analyst Update",
+    text: "Consensus ratings can help you compare names receiving stronger institutional attention.",
+    cta: "See analyst highlights"
+  }
+];
+
+let timedBannerTimeout = null;
+
+function getVisibleBannerElement() {
+  if (!el.topInfoBanner) return null;
+  const isHidden =
+    el.topInfoBanner.style.display === "none" ||
+    window.getComputedStyle(el.topInfoBanner).display === "none";
+  return isHidden ? null : el.topInfoBanner;
+}
+
+function scheduleTimedBanner(delay = 60000) {
+  if (!el.topInfoBanner) return;
+
+  if (timedBannerTimeout) {
+    clearTimeout(timedBannerTimeout);
+    timedBannerTimeout = null;
+  }
+
+  timedBannerTimeout = setTimeout(() => {
+    const visibleBanner = getVisibleBannerElement();
+
+    if (visibleBanner) {
+      scheduleTimedBanner(15000);
+      return;
+    }
+
+    const nextBanner =
+      timedBannerPool[Math.floor(Math.random() * timedBannerPool.length)];
+
+    const titleEl = el.topInfoBanner.querySelector(".info-title");
+    const textEl = el.topInfoBanner.querySelector(".info-text");
+    const ctaEl = el.topInfoBanner.querySelector(".text-link");
+
+    if (titleEl) titleEl.textContent = nextBanner.title;
+    if (textEl) textEl.textContent = nextBanner.text;
+    if (ctaEl) ctaEl.textContent = nextBanner.cta;
+
+    state.banners.topInfoBanner = true;
+    saveState();
+    renderHome();
+
+    scheduleTimedBanner(45000);
+  }, delay);
+}
+
+document.addEventListener("click", (e) => {
+  const closeId = e.target.getAttribute("data-close");
+  if (closeId === "topInfoBanner") {
+    scheduleTimedBanner(60000);
+  }
+});
+
+scheduleTimedBanner(60000);
 })();
