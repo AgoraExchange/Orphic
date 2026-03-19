@@ -6,54 +6,110 @@
     name="viewport"
     content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no"
   />
-  <title>Aster Vault</title>
+  <title>Aster Wallet</title>
 
   <meta name="theme-color" content="#0a0f1c" />
+  <meta name="application-name" content="Aster Wallet" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Aster Wallet" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="format-detection" content="telephone=no" />
+
+  <link rel="icon" type="image/png" href="logo.png" />
+  <link rel="apple-touch-icon" href="logo.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="logo.png" />
+  <link rel="shortcut icon" href="logo.png" />
 
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div id="app">
     <section id="loginScreen" class="screen active">
-      <div class="login-wrap">
-        <div class="brand">
-          <div class="brand-mark">✦</div>
-          <div>
-            <p class="eyebrow">Aster Vault</p>
-            <h1>Cinematic Wallet</h1>
-          </div>
+      <div class="login-wrap login-wrap-premium">
+        <div class="login-hero">
+          <p class="eyebrow login-eyebrow">Aster Wallet</p>
+          <h1 class="login-title">Where digital wealth feels effortless.</h1>
         </div>
 
-        <div class="card glass login-card">
-          <h2>Welcome back</h2>
-          <p class="muted">A premium finance-style interface for production and presentation use.</p>
+        <div class="card glass login-card login-card-premium">
+          <div class="login-card-head">
+            <h2>Welcome back</h2>
+            <p class="muted">Secure access to your wallet, markets, linked banking, and portfolio activity.</p>
+          </div>
 
-          <form id="loginForm" class="form">
-            <label>
+          <form id="loginForm" class="form login-form-premium">
+            <label class="login-label">
               <span>Email</span>
-              <input id="loginEmail" type="email" placeholder="name@astervault.io" required />
+              <input id="loginEmail" type="email" placeholder="mail@asterwallet.co" required />
             </label>
 
-            <label>
+            <label class="login-label">
               <span>Password</span>
               <input id="loginPassword" type="password" placeholder="••••••••" required />
             </label>
 
-            <button class="primary-btn" type="submit">Continue</button>
+            <button class="primary-btn login-submit-btn" type="submit">Continue</button>
           </form>
+
+          <div class="login-links-row">
+            <button type="button" class="login-text-btn">Create account</button>
+            <button type="button" class="login-text-btn">Forgot password?</button>
+          </div>
+
+          <button type="button" class="wallet-connect-btn">Connect Wallet</button>
         </div>
       </div>
     </section>
 
     <section id="mainScreen" class="screen">
       <header class="topbar">
-        <div>
-          <p class="eyebrow">Portfolio</p>
-          <h2 id="headerName">Operator</h2>
+        <div class="topbar-left">
+          <div class="portfolio-avatar-wrap">
+            <img src="logo.png" alt="Aster Wallet logo" class="portfolio-avatar" />
+          </div>
+
+          <div class="portfolio-switcher-wrap">
+            <button
+              id="portfolioSwitcherBtn"
+              class="portfolio-switcher-btn"
+              type="button"
+              aria-expanded="false"
+              aria-controls="portfolioDropdown"
+            >
+              <div class="portfolio-switcher-copy">
+                <p class="eyebrow">Portfolio</p>
+                <div class="portfolio-switcher-name-row">
+                  <h2 id="headerName">Richie2Broke</h2>
+                  <span id="portfolioSwitcherChevron" class="portfolio-switcher-chevron">⌄</span>
+                </div>
+              </div>
+            </button>
+
+            <div id="portfolioDropdown" class="portfolio-dropdown hidden">
+              <div class="portfolio-dropdown-head">
+                <p class="portfolio-dropdown-title">Portfolios</p>
+                <button id="addPortfolioBtn" class="portfolio-add-btn" type="button">+</button>
+              </div>
+
+              <div id="portfolioDropdownList" class="portfolio-dropdown-list">
+                <button class="portfolio-dropdown-item active" type="button">
+                  <span class="portfolio-dropdown-dot"></span>
+                  <span class="portfolio-dropdown-label">Richie2Broke</span>
+                </button>
+                <button class="portfolio-dropdown-item" type="button">
+                  <span class="portfolio-dropdown-dot"></span>
+                  <span class="portfolio-dropdown-label">Long Term</span>
+                </button>
+                <button class="portfolio-dropdown-item" type="button">
+                  <span class="portfolio-dropdown-dot"></span>
+                  <span class="portfolio-dropdown-label">Trading Wallet</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-        <button id="openManageTop" class="icon-btn" aria-label="Manage account">⚙️</button>
+
+        <button id="openManageTop" class="icon-btn" aria-label="Manage account" type="button">⚙️</button>
       </header>
 
       <main class="main-content">
@@ -65,7 +121,7 @@
                 <h1 id="totalHoldings">$0.00</h1>
                 <div class="profit-line">
                   <span id="profitValue" class="green">+$0.00</span>
-                  <span id="profitPercent" class="green">(+0.00%) Today</span>
+                  <span id="profitPercent" class="green">(+0.00%) Live</span>
                 </div>
               </div>
               <div id="dayChangePill" class="pill up">+0.00%</div>
@@ -84,12 +140,12 @@
               </svg>
 
               <div class="range-row">
-                <button class="range-btn active" data-range="LIVE">Live</button>
-                <button class="range-btn" data-range="1D">1D</button>
-                <button class="range-btn" data-range="1W">1W</button>
-                <button class="range-btn" data-range="1M">1M</button>
-                <button class="range-btn" data-range="3M">3M</button>
-                <button class="range-btn" data-range="YTD">YTD</button>
+                <button class="range-btn active" data-range="LIVE" type="button">Live</button>
+                <button class="range-btn" data-range="1D" type="button">1D</button>
+                <button class="range-btn" data-range="1W" type="button">1W</button>
+                <button class="range-btn" data-range="1M" type="button">1M</button>
+                <button class="range-btn" data-range="3M" type="button">3M</button>
+                <button class="range-btn" data-range="YTD" type="button">YTD</button>
               </div>
             </div>
           </div>
@@ -99,16 +155,16 @@
               <p class="eyebrow">Buying Power</p>
               <h3 id="buyingPowerAmount">$12,000.00</h3>
             </div>
-            <button class="deposit-btn">Deposit Funds</button>
+            <button class="deposit-btn" type="button">Deposit Funds</button>
           </div>
 
           <div id="topInfoBanner" class="info-banner glass">
             <div class="info-banner-copy">
               <p class="info-title">Did you know?</p>
               <p class="info-text">Our analyst ratings screener can help you find names Wall Street believes in most.</p>
-              <button class="text-link">Explore analyst picks</button>
+              <button class="text-link" type="button">Explore analyst picks</button>
             </div>
-            <button class="close-banner" data-close="topInfoBanner">✕</button>
+            <button class="close-banner" data-close="topInfoBanner" type="button">✕</button>
           </div>
 
           <div class="section-head">
@@ -141,70 +197,67 @@
         </section>
 
         <section class="tab-panel" data-tab="portfolio">
-        <div class="card glass hero-card asset-hero-card">
+          <div class="card glass hero-card asset-hero-card">
             <div class="hero-row">
-            <div>
+              <div>
                 <p class="eyebrow">Total Holdings</p>
                 <h1 id="assetsTotalHoldings">$0.00</h1>
                 <div class="profit-line">
-                <span id="assetsProfitValue" class="green">+$0.00</span>
-                <span id="assetsProfitPercent" class="green">(+0.00%) Today</span>
+                  <span id="assetsProfitValue" class="green">+$0.00</span>
+                  <span id="assetsProfitPercent" class="green">(+0.00%) Live</span>
                 </div>
-            </div>
-            <div id="assetsDayChangePill" class="pill up">+0.00%</div>
+              </div>
+              <div id="assetsDayChangePill" class="pill up">+0.00%</div>
             </div>
 
             <div class="chart-wrap">
-            <svg id="assetsPerformanceChart" class="performance-chart" viewBox="0 0 320 120" preserveAspectRatio="none">
+              <svg id="assetsPerformanceChart" class="performance-chart" viewBox="0 0 320 120" preserveAspectRatio="none">
                 <defs>
-                <linearGradient id="assetsChartFill" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="assetsChartFill" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stop-color="rgba(54, 214, 132, 0.35)"></stop>
                     <stop offset="100%" stop-color="rgba(54, 214, 132, 0)"></stop>
-                </linearGradient>
+                  </linearGradient>
                 </defs>
                 <path id="assetsChartAreaPath" d=""></path>
                 <path id="assetsChartLinePath" d=""></path>
-            </svg>
+              </svg>
 
-            <div class="range-row">
-                <button class="asset-range-btn active" data-range="LIVE">Live</button>
-                <button class="asset-range-btn" data-range="1D">1D</button>
-                <button class="asset-range-btn" data-range="1W">1W</button>
-                <button class="asset-range-btn" data-range="1M">1M</button>
-                <button class="asset-range-btn" data-range="3M">3M</button>
-                <button class="asset-range-btn" data-range="YTD">YTD</button>
+              <div class="range-row">
+                <button class="asset-range-btn active" data-range="LIVE" type="button">Live</button>
+                <button class="asset-range-btn" data-range="1D" type="button">1D</button>
+                <button class="asset-range-btn" data-range="1W" type="button">1W</button>
+                <button class="asset-range-btn" data-range="1M" type="button">1M</button>
+                <button class="asset-range-btn" data-range="3M" type="button">3M</button>
+                <button class="asset-range-btn" data-range="YTD" type="button">YTD</button>
+              </div>
             </div>
-            </div>
-        </div>
+          </div>
 
-        <div class="section-head">
+          <div class="section-head">
             <h3>Top 5 Daily Movers</h3>
-        </div>
-        <div id="topMoversList" class="stack"></div>
+          </div>
+          <div id="topMoversList" class="stack"></div>
 
-        <div class="section-head">
+          <div class="section-head">
             <h3>Explore More Crypto</h3>
-        </div>
+          </div>
 
-        <div class="segment-row">
-            <button id="tradableTabBtn" class="segment-btn active" data-explore-filter="tradable">Tradable</button>
-            <button id="nonTradableTabBtn" class="segment-btn" data-explore-filter="nontradable">Non-tradable</button>
-        </div>
+          <div class="segment-row">
+            <button id="tradableTabBtn" class="segment-btn active" data-explore-filter="tradable" type="button">Tradable</button>
+            <button id="nonTradableTabBtn" class="segment-btn" data-explore-filter="nontradable" type="button">Non-tradable</button>
+          </div>
 
-        <div id="exploreCryptoList" class="stack"></div>
+          <div id="exploreCryptoList" class="stack"></div>
 
-        <button class="show-more-link" type="button">Show more</button>
+          <button class="show-more-link" type="button">Show more</button>
 
-        <div class="section-head">
+          <div class="section-head">
             <h3>History</h3>
-        </div>
-        <div id="historyList" class="stack"></div>
+          </div>
+          <div id="historyList" class="stack"></div>
         </section>
 
         <section class="tab-panel" data-tab="accounts">
-          <div class="section-head">
-            <h3>Linked Accounts</h3>
-          </div>
           <div id="accountsList" class="stack"></div>
         </section>
 
@@ -213,40 +266,162 @@
             <h3>Recent Activity</h3>
           </div>
           <div id="activityList" class="stack"></div>
+
+          <div class="section-head">
+            <h3>Crypto Market</h3>
+          </div>
+          <div id="activityCryptoMarket" class="market-mini-grid"></div>
+
+          <div class="section-head">
+            <h3>Top Movers</h3>
+          </div>
+          <div id="activityTopMovers" class="movers-mini-grid"></div>
+
+          <div class="section-head">
+            <h3>Market News</h3>
+          </div>
+          <div id="activityNewsList" class="stack"></div>
         </section>
 
         <section class="tab-panel" data-tab="settings">
-          <div class="card glass settings-card">
-            <div class="settings-profile">
-              <strong id="settingsName">Operator</strong>
-              <p id="settingsEmail" class="muted">name@astervault.io</p>
+          <div class="card glass settings-card profile-card">
+            <div class="profile-top no-avatar">
+              <div class="profile-meta">
+                <p class="eyebrow">Profile</p>
+                <h3 id="settingsName">Richie2Broke</h3>
+                <p id="settingsUsername" class="profile-username">@richie</p>
+                <p id="settingsEmail" class="muted">mail@asterwallet.co</p>
+              </div>
             </div>
 
-            <button id="openManageSettings" class="settings-btn">Manage Account</button>
-            <button id="resetBtn" class="settings-btn secondary">Reset Data</button>
-            <button id="logoutBtn" class="settings-btn danger">Log Out</button>
+            <div class="profile-holdings-pill">
+              <span>Total Portfolio Holdings</span>
+              <strong id="settingsTotalHoldings">$0.00</strong>
+            </div>
+
+            <button id="openManageSettings" class="settings-btn" type="button">Manage Account</button>
+            <button id="resetBtn" class="settings-btn secondary" type="button">Reset Data</button>
+            <button id="logoutBtn" class="settings-btn danger" type="button">Log Out</button>
+          </div>
+
+          <div class="section-head">
+            <h3>Preferences</h3>
+          </div>
+
+          <div class="card glass settings-panel">
+            <div class="settings-row">
+              <div>
+                <strong>Show favorites on Home page</strong>
+                <p class="settings-row-sub">Pin your preferred assets and watchlist names to the main screen.</p>
+              </div>
+              <button class="toggle-switch active" type="button" data-setting-toggle="favorites">
+                <span></span>
+              </button>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <strong>Live portfolio movement</strong>
+                <p class="settings-row-sub">Animate total holdings and market activity while viewing Live.</p>
+              </div>
+              <button class="toggle-switch active" type="button" data-setting-toggle="liveMotion">
+                <span></span>
+              </button>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <strong>Market notifications</strong>
+                <p class="settings-row-sub">Show in-app portfolio alerts, analyst notes, and market insights.</p>
+              </div>
+              <button class="toggle-switch active" type="button" data-setting-toggle="notifications">
+                <span></span>
+              </button>
+            </div>
+
+            <div class="settings-row">
+              <div>
+                <strong>Price chart animations</strong>
+                <p class="settings-row-sub">Keep animated watch cards and market strips moving throughout the app.</p>
+              </div>
+              <button class="toggle-switch active" type="button" data-setting-toggle="charts">
+                <span></span>
+              </button>
+            </div>
+          </div>
+
+          <div class="section-head banking-head">
+            <h3>Banking</h3>
+            <button class="market-add-btn" type="button">+</button>
+          </div>
+
+          <div class="card glass settings-panel">
+            <div class="banking-summary-row">
+              <div>
+                <strong>Linked banking and transfers</strong>
+                <p class="settings-row-sub">Review connected accounts and estimated allocation by asset class.</p>
+              </div>
+            </div>
+
+            <div class="allocation-list">
+              <div class="allocation-item">
+                <div class="allocation-top">
+                  <span>Crypto</span>
+                  <strong id="settingsCryptoPct">71%</strong>
+                </div>
+                <div class="allocation-bar">
+                  <div id="settingsCryptoBar" class="allocation-fill crypto-fill" style="width: 71%;"></div>
+                </div>
+              </div>
+
+              <div class="allocation-item">
+                <div class="allocation-top">
+                  <span>Investments</span>
+                  <strong id="settingsInvestmentsPct">22%</strong>
+                </div>
+                <div class="allocation-bar">
+                  <div id="settingsInvestmentsBar" class="allocation-fill investment-fill" style="width: 22%;"></div>
+                </div>
+              </div>
+
+              <div class="allocation-item">
+                <div class="allocation-top">
+                  <span>Cash</span>
+                  <strong id="settingsCashPct">7%</strong>
+                </div>
+                <div class="allocation-bar">
+                  <div id="settingsCashBar" class="allocation-fill cash-fill" style="width: 7%;"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="disclosure-block settings-disclosure">
+            <p>
+              Brokerage-style balances, allocations, banking controls, watchlist preferences, and notification settings shown in this interface are for cinematic presentation and mock portfolio display only. Asset values, connected banking summaries, and portfolio percentages are illustrative.
+            </p>
           </div>
         </section>
       </main>
 
       <nav class="bottom-nav">
-        <button class="nav-btn active" data-tab="home">
+        <button class="nav-btn active" data-tab="home" type="button">
           <span>🏠</span>
           <small>Home</small>
         </button>
-        <button class="nav-btn" data-tab="portfolio">
+        <button class="nav-btn" data-tab="portfolio" type="button">
           <span>📈</span>
           <small>Assets</small>
         </button>
-        <button class="nav-btn" data-tab="accounts">
+        <button class="nav-btn" data-tab="accounts" type="button">
           <span>🏦</span>
           <small>Accounts</small>
         </button>
-        <button class="nav-btn" data-tab="activity">
+        <button class="nav-btn" data-tab="activity" type="button">
           <span>🧾</span>
           <small>Activity</small>
         </button>
-        <button class="nav-btn" data-tab="settings">
+        <button class="nav-btn" data-tab="settings" type="button">
           <span>⚙️</span>
           <small>Settings</small>
         </button>
@@ -259,134 +434,168 @@
         <div class="sheet-handle"></div>
         <div class="modal-head">
           <h3>Manage Account</h3>
-          <button id="closeManage" class="icon-btn">✕</button>
+          <button id="closeManage" class="icon-btn" type="button">✕</button>
         </div>
 
         <form id="manageForm" class="manage-form">
-          <div class="group">
-            <h4>Profile</h4>
-            <label>
-              <span>Name</span>
-              <input id="manageName" type="text" />
-            </label>
-            <label>
-              <span>Email</span>
-              <input id="manageEmail" type="email" />
-            </label>
+          <div class="manage-scroll">
+            <div class="group">
+              <h4>Profile</h4>
+              <label>
+                <span>Name</span>
+                <input id="manageName" type="text" />
+              </label>
+              <label>
+                <span>Email</span>
+                <input id="manageEmail" type="email" />
+              </label>
+            </div>
+
+            <div class="group">
+              <h4>Overview</h4>
+              <label>
+                <span>Cash Reserve</span>
+                <input id="manageCash" type="number" step="0.01" />
+              </label>
+              <label>
+                <span>Available Funds</span>
+                <input id="manageAvailable" type="number" step="0.01" />
+              </label>
+              <label>
+                <span>24h Change %</span>
+                <input id="manageChange" type="number" step="0.01" />
+              </label>
+              <label>
+                <span>Buying Power</span>
+                <input id="manageBuyingPower" type="number" step="0.01" />
+              </label>
+            </div>
+
+            <div class="group">
+              <h4>Crypto</h4>
+              <label>
+                <span>Bitcoin Amount</span>
+                <input id="btcAmount" type="number" step="0.000001" />
+              </label>
+              <label>
+                <span>Bitcoin Price</span>
+                <input id="btcPrice" type="number" step="0.01" />
+              </label>
+
+              <label>
+                <span>Ethereum Amount</span>
+                <input id="ethAmount" type="number" step="0.000001" />
+              </label>
+              <label>
+                <span>Ethereum Price</span>
+                <input id="ethPrice" type="number" step="0.01" />
+              </label>
+
+              <label>
+                <span>Solana Amount</span>
+                <input id="solAmount" type="number" step="0.000001" />
+              </label>
+              <label>
+                <span>Solana Price</span>
+                <input id="solPrice" type="number" step="0.01" />
+              </label>
+
+              <label>
+                <span>XRP Amount</span>
+                <input id="xrpAmount" type="number" step="0.000001" />
+              </label>
+              <label>
+                <span>XRP Price</span>
+                <input id="xrpPrice" type="number" step="0.01" />
+              </label>
+            </div>
+
+            <div class="group">
+              <h4>Stocks & ETFs</h4>
+              <label>
+                <span>TSLA Shares</span>
+                <input id="tslaShares" type="number" step="0.0001" />
+              </label>
+              <label>
+                <span>TSLA Price</span>
+                <input id="tslaPrice" type="number" step="0.01" />
+              </label>
+
+              <label>
+                <span>NVDA Shares</span>
+                <input id="nvdaShares" type="number" step="0.0001" />
+              </label>
+              <label>
+                <span>NVDA Price</span>
+                <input id="nvdaPrice" type="number" step="0.01" />
+              </label>
+
+              <label>
+                <span>SPY Shares</span>
+                <input id="spyShares" type="number" step="0.0001" />
+              </label>
+              <label>
+                <span>SPY Price</span>
+                <input id="spyPrice" type="number" step="0.01" />
+              </label>
+            </div>
+
+            <div class="group">
+              <h4>Linked Accounts</h4>
+              <label>
+                <span>Account 1 Name</span>
+                <input id="acc1Name" type="text" />
+              </label>
+              <label>
+                <span>Account 1 Balance</span>
+                <input id="acc1Balance" type="number" step="0.01" />
+              </label>
+              <label>
+                <span>Account 2 Name</span>
+                <input id="acc2Name" type="text" />
+              </label>
+              <label>
+                <span>Account 2 Balance</span>
+                <input id="acc2Balance" type="number" step="0.01" />
+              </label>
+            </div>
           </div>
 
-          <div class="group">
-            <h4>Overview</h4>
-            <label>
-              <span>Cash Reserve</span>
-              <input id="manageCash" type="number" step="0.01" />
-            </label>
-            <label>
-              <span>Available Funds</span>
-              <input id="manageAvailable" type="number" step="0.01" />
-            </label>
-            <label>
-              <span>24h Change %</span>
-              <input id="manageChange" type="number" step="0.01" />
-            </label>
-            <label>
-              <span>Buying Power</span>
-              <input id="manageBuyingPower" type="number" step="0.01" />
-            </label>
+          <div class="manage-footer">
+            <button class="primary-btn manage-submit-btn" type="submit">Save Changes</button>
           </div>
-
-          <div class="group">
-            <h4>Crypto</h4>
-            <label>
-              <span>Bitcoin Amount</span>
-              <input id="btcAmount" type="number" step="0.000001" />
-            </label>
-            <label>
-              <span>Bitcoin Price</span>
-              <input id="btcPrice" type="number" step="0.01" />
-            </label>
-
-            <label>
-              <span>Ethereum Amount</span>
-              <input id="ethAmount" type="number" step="0.000001" />
-            </label>
-            <label>
-              <span>Ethereum Price</span>
-              <input id="ethPrice" type="number" step="0.01" />
-            </label>
-
-            <label>
-              <span>Solana Amount</span>
-              <input id="solAmount" type="number" step="0.000001" />
-            </label>
-            <label>
-              <span>Solana Price</span>
-              <input id="solPrice" type="number" step="0.01" />
-            </label>
-
-            <label>
-              <span>XRP Amount</span>
-              <input id="xrpAmount" type="number" step="0.000001" />
-            </label>
-            <label>
-              <span>XRP Price</span>
-              <input id="xrpPrice" type="number" step="0.01" />
-            </label>
-          </div>
-
-          <div class="group">
-            <h4>Stocks & ETFs</h4>
-            <label>
-              <span>TSLA Shares</span>
-              <input id="tslaShares" type="number" step="0.0001" />
-            </label>
-            <label>
-              <span>TSLA Price</span>
-              <input id="tslaPrice" type="number" step="0.01" />
-            </label>
-
-            <label>
-              <span>NVDA Shares</span>
-              <input id="nvdaShares" type="number" step="0.0001" />
-            </label>
-            <label>
-              <span>NVDA Price</span>
-              <input id="nvdaPrice" type="number" step="0.01" />
-            </label>
-
-            <label>
-              <span>SPY Shares</span>
-              <input id="spyShares" type="number" step="0.0001" />
-            </label>
-            <label>
-              <span>SPY Price</span>
-              <input id="spyPrice" type="number" step="0.01" />
-            </label>
-          </div>
-
-          <div class="group">
-            <h4>Linked Accounts</h4>
-            <label>
-              <span>Account 1 Name</span>
-              <input id="acc1Name" type="text" />
-            </label>
-            <label>
-              <span>Account 1 Balance</span>
-              <input id="acc1Balance" type="number" step="0.01" />
-            </label>
-            <label>
-              <span>Account 2 Name</span>
-              <input id="acc2Name" type="text" />
-            </label>
-            <label>
-              <span>Account 2 Balance</span>
-              <input id="acc2Balance" type="number" step="0.01" />
-            </label>
-          </div>
-
-          <button class="primary-btn sticky-btn" type="submit">Save Changes</button>
         </form>
       </div>
+    </div>
+
+    <div id="newPortfolioModal" class="modal hidden">
+      <div class="modal-backdrop" data-close-new-portfolio="true"></div>
+      <div class="modal-sheet quick-sheet">
+        <div class="sheet-handle"></div>
+        <div class="modal-head">
+          <h3>New Portfolio</h3>
+          <button id="closeNewPortfolio" class="icon-btn" type="button">✕</button>
+        </div>
+
+        <form id="newPortfolioForm" class="manage-form quick-form">
+          <div class="group">
+            <h4>Name Portfolio</h4>
+            <label>
+              <span>Portfolio Name</span>
+              <input id="newPortfolioName" type="text" placeholder="Growth Wallet" maxlength="26" />
+            </label>
+          </div>
+
+          <button class="primary-btn sticky-btn" type="submit">Add Portfolio</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="logoPreviewModal" class="logo-preview-modal hidden">
+    <div class="logo-preview-backdrop" data-close-logo-preview="true"></div>
+    <div class="logo-preview-content">
+      <img src="logo.png" alt="Aster logo enlarged" class="logo-preview-image" />
     </div>
   </div>
 
