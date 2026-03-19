@@ -1,8 +1,12 @@
 (() => {
   "use strict";
 
-  const STORAGE_KEY = "aster_vault_prop_app_v4";
-  const LIVE_TICK_MS = 5000;
+  const STORAGE_KEY = "aster_vault_prop_app_v8";
+  const LIVE_TICK_MS = 3000;
+  const ACTIVITY_MARKET_TICK_MS = 2000;
+
+  const $ = (id) => document.getElementById(id);
+  const $$ = (selector) => [...document.querySelectorAll(selector)];
 
   const chartSeries = {
     LIVE: [14, 18, 17, 21, 24, 22, 28, 26, 31, 29, 35, 39],
@@ -14,12 +18,12 @@
   };
 
   const rangeMeta = {
-    LIVE: { dollar: 842.22, percent: 0.74, label: "Live" },
-    "1D": { dollar: 1284.92, percent: 1.16, label: "Today" },
-    "1W": { dollar: 4218.38, percent: 3.44, label: "Past Week" },
-    "1M": { dollar: 18240.18, percent: 8.72, label: "Past Month" },
-    "3M": { dollar: 42110.22, percent: 17.58, label: "Past 3 Months" },
-    YTD: { dollar: 68440.74, percent: 28.46, label: "Year to Date" }
+    LIVE: { dollar: 12842.37, percent: 0.76, label: "Live" },
+    "1D": { dollar: 18492.22, percent: 1.10, label: "Today" },
+    "1W": { dollar: 44218.38, percent: 2.61, label: "Past Week" },
+    "1M": { dollar: 98240.18, percent: 6.14, label: "Past Month" },
+    "3M": { dollar: 182110.22, percent: 11.72, label: "Past 3 Months" },
+    YTD: { dollar: 284440.74, percent: 18.44, label: "Year to Date" }
   };
 
   const topMoversDefaults = [
@@ -58,9 +62,69 @@
     { type: "buy", title: "Bought Bitcoin", subtitle: "Market buy • 0.182 BTC", amount: -18240.22, date: "Today • 2:14 PM" },
     { type: "buy", title: "Bought TSLA", subtitle: "Market buy • 4.2 shares", amount: -1045.13, date: "Today • 11:40 AM" },
     { type: "sell", title: "Sold Solana", subtitle: "Market sell • 20 SOL", amount: 4584.20, date: "Yesterday • 5:22 PM" },
-    { type: "transfer", title: "Instant Deposit", subtitle: "Buying power increase", amount: 5000.00, date: "Yesterday • 9:02 AM" },
+    { type: "transfer", title: "Instant Deposit", subtitle: "Buying power increase", amount: 5000.0, date: "Yesterday • 9:02 AM" },
     { type: "buy", title: "Bought NVIDIA", subtitle: "Market buy • 2.0 shares", amount: -1824.36, date: "Mar 12 • 1:18 PM" },
-    { type: "sell", title: "Sold XRP", subtitle: "Market sell • 2000 XRP", amount: 5280.00, date: "Mar 11 • 4:33 PM" }
+    { type: "sell", title: "Sold XRP", subtitle: "Market sell • 2000 XRP", amount: 5280.0, date: "Mar 11 • 4:33 PM" }
+  ];
+
+  const activityCryptoDefaults = [
+    { id: "btc", name: "Bitcoin", symbol: "BTC", price: 97820.24, move: 3.91, points: [18, 19, 21, 20, 23, 25, 24, 27, 29, 31] },
+    { id: "xrp", name: "XRP", symbol: "XRP", price: 2.64, move: 5.12, points: [11, 12, 11, 13, 15, 14, 16, 18, 17, 19] },
+    { id: "eth", name: "Ethereum", symbol: "ETH", price: 5284.42, move: 2.47, points: [14, 15, 16, 15, 17, 18, 19, 20, 19, 22] },
+    { id: "doge", name: "Dogecoin", symbol: "DOGE", price: 0.19, move: 4.82, points: [10, 9, 11, 12, 13, 12, 14, 15, 14, 16] },
+    { id: "sol", name: "Solana", symbol: "SOL", price: 229.71, move: 6.35, points: [13, 14, 16, 15, 17, 19, 18, 21, 23, 24] }
+  ];
+
+  const activityTopMoversDefaults = [
+    { symbol: "VG", name: "Venture Global", price: 18.42, move: 12.51 },
+    { symbol: "NEXT", name: "NextDecade", price: 7.91, move: 8.24 },
+    { symbol: "SAIL", name: "SailPoint", price: 19.84, move: -3.18 },
+    { symbol: "GEMI", name: "Gemini Labs", price: 4.28, move: 15.04 },
+    { symbol: "ORLA", name: "Orla Mining", price: 5.61, move: 6.82 },
+    { symbol: "WSHP", name: "Wishpond", price: 1.42, move: -2.44 }
+  ];
+
+  const activityNewsDefaults = [
+    { source: "The Motley Fool", age: "15m", title: "Here’s my top AI stock pick during this market pullback." },
+    { source: "MarketWatch", age: "28m", title: "Crypto traders watch Bitcoin levels as momentum stocks rebound." },
+    { source: "Barron's", age: "41m", title: "Why growth investors are rotating back into select tech names." },
+    { source: "InvestorPlace", age: "1h", title: "3 digital assets traders are watching into the afternoon session." }
+  ];
+
+  const extraActivityDefaults = [
+    { id: 1001, type: "notification", title: "Price Alert", subtitle: "Bitcoin crossed above your watch level.", amount: 0, date: "Today • 3:22 PM" },
+    { id: 1002, type: "buy", title: "Bought Ethereum", subtitle: "Recurring buy • 1.2 ETH", amount: -6341.30, date: "Today • 2:58 PM" },
+    { id: 1003, type: "notification", title: "Analyst Note", subtitle: "3 stocks in your watchlist saw rating updates.", amount: 0, date: "Today • 2:11 PM" },
+    { id: 1004, type: "sell", title: "Sold DOGE", subtitle: "Market sell • 4,500 DOGE", amount: 853.44, date: "Today • 1:43 PM" },
+    { id: 1005, type: "transfer", title: "Buying Power Increased", subtitle: "Funds are now available to trade.", amount: 2500.0, date: "Today • 1:05 PM" },
+    { id: 1006, type: "notification", title: "Market News", subtitle: "Tech and crypto names are leading mid-day volume.", amount: 0, date: "Today • 12:46 PM" },
+    { id: 1007, type: "buy", title: "Bought XRP", subtitle: "Market buy • 1,800 XRP", amount: -4752.0, date: "Today • 11:31 AM" },
+    { id: 1008, type: "notification", title: "Watchlist Update", subtitle: "TSLA and NVDA are among your strongest movers today.", amount: 0, date: "Today • 10:14 AM" },
+    { id: 1009, type: "sell", title: "Sold TSLA", subtitle: "Limit sell • 2.0 shares", amount: 497.68, date: "Yesterday • 4:40 PM" },
+    { id: 1010, type: "notification", title: "Did you know?", subtitle: "Screeners can help uncover names with unusual momentum.", amount: 0, date: "Yesterday • 2:52 PM" }
+  ];
+
+  const timedBannerPool = [
+    {
+      title: "Did you know?",
+      text: "Market screeners can help uncover strong momentum names before the crowd catches on.",
+      cta: "Explore momentum picks"
+    },
+    {
+      title: "Portfolio Insight",
+      text: "Your watchlist can be used to track fast movers across crypto, equities, and ETFs.",
+      cta: "View watchlist ideas"
+    },
+    {
+      title: "Trending Now",
+      text: "Some investors are rotating into high-beta names and digital assets with stronger recent volume.",
+      cta: "Explore trending markets"
+    },
+    {
+      title: "Analyst Update",
+      text: "Consensus ratings can help you compare names receiving stronger institutional attention.",
+      cta: "See analyst highlights"
+    }
   ];
 
   const defaultState = {
@@ -68,8 +132,8 @@
     exploreFilter: "tradable",
     liveBaseTotal: null,
     liveCurrentTotal: null,
-    liveProfitDollar: 842.22,
-    liveProfitPercent: 0.74,
+    liveProfitDollar: 12842.37,
+    liveProfitPercent: 0.76,
     banners: {
       topInfoBanner: true
     },
@@ -89,27 +153,47 @@
     exploreTradable: exploreTradableDefaults,
     exploreNonTradable: exploreNonTradableDefaults,
     historyItems: historyDefaults,
+    activityMarketCoins: activityCryptoDefaults,
+    activityTopMoversData: activityTopMoversDefaults,
+    activityNewsItems: activityNewsDefaults,
+    accountUi: {
+      expandedId: null
+    },
+    settingsUi: {
+      favorites: true,
+      liveMotion: true,
+      notifications: true,
+      charts: true
+    },
+    portfolioUi: {
+      activeId: "p1",
+      items: [
+        { id: "p1", name: "Richie" },
+        { id: "p2", name: "Long Term" },
+        { id: "p3", name: "Trading Wallet" }
+      ]
+    },
     user: {
       name: "Richie",
       email: "richie2broke@proton.me",
       loggedIn: false
     },
     wallet: {
-      cash: 28450.22,
-      available: 61200.0,
-      dayChange: 4.82,
-      buyingPower: 12000.0
+      cash: 186420.55,
+      available: 248000.0,
+      dayChange: 2.84,
+      buyingPower: 120000.0
     },
     crypto: [
-      { id: "btc", name: "Bitcoin", symbol: "BTC", amount: 1.8421, price: 97820.24, move: 3.91 },
-      { id: "eth", name: "Ethereum", symbol: "ETH", amount: 14.58, price: 5284.42, move: 2.47 },
-      { id: "sol", name: "Solana", symbol: "SOL", amount: 322.11, price: 229.71, move: 6.35 },
-      { id: "xrp", name: "XRP", symbol: "XRP", amount: 18420.5, price: 2.64, move: 5.12 }
+      { id: "btc", name: "Bitcoin", symbol: "BTC", amount: 8.8421, price: 71050.31, move: 3.91 },
+      { id: "eth", name: "Ethereum", symbol: "ETH", amount: 74.58, price: 2193.10, move: 2.47 },
+      { id: "sol", name: "Solana", symbol: "SOL", amount: 1622.11, price: 90.05, move: 6.35 },
+      { id: "xrp", name: "XRP", symbol: "XRP", amount: 84205.5, price: 1.40, move: 5.12 }
     ],
     stocks: [
-      { id: "tsla", name: "Tesla", symbol: "TSLA", shares: 42.381, price: 248.84, move: 2.83 },
-      { id: "nvda", name: "NVIDIA", symbol: "NVDA", shares: 84.22, price: 912.18, move: 4.22 },
-      { id: "spy", name: "SPDR S&P 500 ETF", symbol: "SPY", shares: 35.1, price: 512.44, move: 1.18 }
+      { id: "tsla", name: "Tesla", symbol: "TSLA", shares: 420.381, price: 392.78, move: 2.83 },
+      { id: "nvda", name: "NVIDIA", symbol: "NVDA", shares: 384.22, price: 180.40, move: 4.22 },
+      { id: "spy", name: "SPDR S&P 500 ETF", symbol: "SPY", shares: 210.1, price: 661.43, move: 1.18 }
     ],
     predictionMarkets: [
       { id: "pm1", title: "College Basketball", subtitle: "Will a No. 1 seed win the championship?", volume: "$2.4M Vol." },
@@ -117,19 +201,48 @@
       { id: "pm3", title: "Fed Rate Path", subtitle: "Will rates be cut by summer?", volume: "$1.7M Vol." }
     ],
     accounts: [
-      { id: "a1", name: "Northline Reserve", balance: 82440.18, mask: "4082" },
-      { id: "a2", name: "Atlas Premier", balance: 35420.4, mask: "1129" }
+      {
+        id: "a1",
+        name: "Northline Reserve",
+        balance: 82440.18,
+        mask: "4082",
+        routing: "2110000••",
+        accountNumber: "1049••••82",
+        transactions: [
+          { title: "Payroll Deposit", date: "Today • 8:12 AM", amount: 4200.0 },
+          { title: "ACH Transfer", date: "Yesterday • 4:15 PM", amount: -1250.0 },
+          { title: "Card Purchase", date: "Yesterday • 11:48 AM", amount: -84.22 }
+        ]
+      },
+      {
+        id: "a2",
+        name: "Atlas Premier",
+        balance: 35420.4,
+        mask: "1129",
+        routing: "0311001••",
+        accountNumber: "8831••••29",
+        transactions: [
+          { title: "Wire Transfer", date: "Today • 1:02 PM", amount: 2400.0 },
+          { title: "ATM Withdrawal", date: "Yesterday • 7:42 PM", amount: -300.0 },
+          { title: "Subscription Charge", date: "Yesterday • 9:11 AM", amount: -14.99 }
+        ]
+      },
+      {
+        id: "a3",
+        name: "Chase Platinum Checking",
+        balance: 19872.66,
+        mask: "5901",
+        routing: "3222716••",
+        accountNumber: "5520••••01",
+        transactions: [
+          { title: "Zelle Received", date: "Today • 3:28 PM", amount: 680.0 },
+          { title: "Online Transfer", date: "Today • 10:03 AM", amount: -500.0 },
+          { title: "Debit Card Purchase", date: "Yesterday • 6:44 PM", amount: -63.18 }
+        ]
+      }
     ],
-    activity: [
-      { id: 1, title: "Portfolio Rebalance", subtitle: "Asset adjustment", amount: -12480.22, date: "Today • 11:24 AM" },
-      { id: 2, title: "Reserve Transfer", subtitle: "Linked account", amount: 16000.0, date: "Today • 9:08 AM" },
-      { id: 3, title: "Bitcoin Allocation", subtitle: "Position increase", amount: -8200.0, date: "Yesterday • 6:20 PM" },
-      { id: 4, title: "Solana Trim", subtitle: "Position decrease", amount: 6840.18, date: "Yesterday • 1:42 PM" }
-    ]
+    activity: [...extraActivityDefaults]
   };
-
-  const $ = (id) => document.getElementById(id);
-  const $$ = (selector) => [...document.querySelectorAll(selector)];
 
   const el = {
     loginScreen: $("loginScreen"),
@@ -162,14 +275,13 @@
 
     navBtns: $$(".nav-btn"),
     panels: $$(".tab-panel"),
-    rangeBtns: $$(".range-btn"),
 
     manageModal: $("manageModal"),
     openManageTop: $("openManageTop"),
     openManageSettings: $("openManageSettings"),
     closeManage: $("closeManage"),
     manageForm: $("manageForm"),
-    modalBackdrop: document.querySelector(".modal-backdrop"),
+    modalBackdrop: document.querySelector("#manageModal .modal-backdrop"),
 
     manageName: $("manageName"),
     manageEmail: $("manageEmail"),
@@ -208,43 +320,101 @@
     assetsDayChangePill: $("assetsDayChangePill"),
     assetsChartLinePath: $("assetsChartLinePath"),
     assetsChartAreaPath: $("assetsChartAreaPath"),
-    assetRangeBtns: $$(".asset-range-btn"),
     topMoversList: $("topMoversList"),
     exploreCryptoList: $("exploreCryptoList"),
     historyList: $("historyList"),
-    exploreFilterBtns: $$("[data-explore-filter]")
+
+    activityCryptoMarket: $("activityCryptoMarket"),
+    activityTopMovers: $("activityTopMovers"),
+    activityNewsList: $("activityNewsList"),
+
+    portfolioSwitcherBtn: $("portfolioSwitcherBtn"),
+    portfolioDropdown: $("portfolioDropdown"),
+    portfolioDropdownList: $("portfolioDropdownList"),
+    addPortfolioBtn: $("addPortfolioBtn"),
+
+    newPortfolioModal: $("newPortfolioModal"),
+    closeNewPortfolio: $("closeNewPortfolio"),
+    newPortfolioForm: $("newPortfolioForm"),
+    newPortfolioName: $("newPortfolioName"),
+
+    portfolioAvatarWrap: document.querySelector(".portfolio-avatar-wrap"),
+    portfolioAvatar: document.querySelector(".portfolio-avatar"),
+    logoPreviewModal: $("logoPreviewModal"),
+    logoPreviewBackdrop: document.querySelector("[data-close-logo-preview='true']"),
+    logoPreviewContent: document.querySelector(".logo-preview-content"),
+    logoPreviewImage: document.querySelector(".logo-preview-image")
   };
 
   let state = loadState();
   let liveInterval = null;
+  let activityMarketInterval = null;
+  let timedBannerTimeout = null;
+  let accountEventsBound = false;
+  let settingsEventsBound = false;
+  let portfolioEventsBound = false;
+  let logoPreviewEventsBound = false;
 
   function clone(obj) {
     return JSON.parse(JSON.stringify(obj));
+  }
+
+  function migrateState(parsed) {
+    const merged = {
+      ...clone(defaultState),
+      ...parsed,
+      banners: { ...defaultState.banners, ...(parsed.banners || {}) },
+      accountUi: { ...defaultState.accountUi, ...(parsed.accountUi || {}) },
+      settingsUi: { ...defaultState.settingsUi, ...(parsed.settingsUi || {}) },
+      portfolioUi: {
+        ...defaultState.portfolioUi,
+        ...(parsed.portfolioUi || {}),
+        items: Array.isArray(parsed.portfolioUi?.items) ? parsed.portfolioUi.items : clone(defaultState.portfolioUi.items)
+      },
+      user: { ...defaultState.user, ...(parsed.user || {}) },
+      wallet: { ...defaultState.wallet, ...(parsed.wallet || {}) },
+      crypto: Array.isArray(parsed.crypto) ? parsed.crypto : clone(defaultState.crypto),
+      stocks: Array.isArray(parsed.stocks) ? parsed.stocks : clone(defaultState.stocks),
+      predictionMarkets: Array.isArray(parsed.predictionMarkets) ? parsed.predictionMarkets : clone(defaultState.predictionMarkets),
+      accounts: Array.isArray(parsed.accounts) ? parsed.accounts : clone(defaultState.accounts),
+      activity: Array.isArray(parsed.activity) ? parsed.activity : clone(defaultState.activity),
+      discoverCards: Array.isArray(parsed.discoverCards) ? parsed.discoverCards : clone(defaultState.discoverCards),
+      topMovers: Array.isArray(parsed.topMovers) ? parsed.topMovers : clone(defaultState.topMovers),
+      exploreTradable: Array.isArray(parsed.exploreTradable) ? parsed.exploreTradable : clone(defaultState.exploreTradable),
+      exploreNonTradable: Array.isArray(parsed.exploreNonTradable) ? parsed.exploreNonTradable : clone(defaultState.exploreNonTradable),
+      historyItems: Array.isArray(parsed.historyItems) ? parsed.historyItems : clone(defaultState.historyItems),
+      activityMarketCoins: Array.isArray(parsed.activityMarketCoins) ? parsed.activityMarketCoins : clone(defaultState.activityMarketCoins),
+      activityTopMoversData: Array.isArray(parsed.activityTopMoversData) ? parsed.activityTopMoversData : clone(defaultState.activityTopMoversData),
+      activityNewsItems: Array.isArray(parsed.activityNewsItems) ? parsed.activityNewsItems : clone(defaultState.activityNewsItems)
+    };
+
+    if (!Array.isArray(merged.accounts) || merged.accounts.length < 3) {
+      merged.accounts = clone(defaultState.accounts);
+    }
+
+    if (!Array.isArray(merged.activity) || merged.activity.length < 10) {
+      const existing = Array.isArray(merged.activity) ? merged.activity : [];
+      merged.activity = [...clone(extraActivityDefaults), ...existing].slice(0, 20);
+    }
+
+    if (!merged.exploreFilter) merged.exploreFilter = "tradable";
+
+    if (!Array.isArray(merged.portfolioUi.items) || !merged.portfolioUi.items.length) {
+      merged.portfolioUi.items = clone(defaultState.portfolioUi.items);
+    }
+
+    if (!merged.portfolioUi.activeId) {
+      merged.portfolioUi.activeId = merged.portfolioUi.items[0]?.id || "p1";
+    }
+
+    return merged;
   }
 
   function loadState() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return clone(defaultState);
-
-      const parsed = JSON.parse(raw);
-      return {
-        ...clone(defaultState),
-        ...parsed,
-        banners: { ...defaultState.banners, ...(parsed.banners || {}) },
-        user: { ...defaultState.user, ...(parsed.user || {}) },
-        wallet: { ...defaultState.wallet, ...(parsed.wallet || {}) },
-        crypto: Array.isArray(parsed.crypto) ? parsed.crypto : clone(defaultState.crypto),
-        stocks: Array.isArray(parsed.stocks) ? parsed.stocks : clone(defaultState.stocks),
-        predictionMarkets: Array.isArray(parsed.predictionMarkets) ? parsed.predictionMarkets : clone(defaultState.predictionMarkets),
-        accounts: Array.isArray(parsed.accounts) ? parsed.accounts : clone(defaultState.accounts),
-        activity: Array.isArray(parsed.activity) ? parsed.activity : clone(defaultState.activity),
-        discoverCards: Array.isArray(parsed.discoverCards) ? parsed.discoverCards : clone(defaultState.discoverCards),
-        topMovers: Array.isArray(parsed.topMovers) ? parsed.topMovers : clone(defaultState.topMovers),
-        exploreTradable: Array.isArray(parsed.exploreTradable) ? parsed.exploreTradable : clone(defaultState.exploreTradable),
-        exploreNonTradable: Array.isArray(parsed.exploreNonTradable) ? parsed.exploreNonTradable : clone(defaultState.exploreNonTradable),
-        historyItems: Array.isArray(parsed.historyItems) ? parsed.historyItems : clone(defaultState.historyItems)
-      };
+      return migrateState(JSON.parse(raw));
     } catch {
       return clone(defaultState);
     }
@@ -279,6 +449,10 @@
     return `${n >= 0 ? "+" : "-"}${money(Math.abs(n))}`;
   }
 
+  function amountClass(value) {
+    return Number(value) >= 0 ? "green" : "red";
+  }
+
   function totalCryptoValue() {
     return state.crypto.reduce((sum, a) => sum + (Number(a.amount) || 0) * (Number(a.price) || 0), 0);
   }
@@ -298,6 +472,10 @@
     return baseTotalHoldingsValue();
   }
 
+  function activePortfolio() {
+    return state.portfolioUi.items.find((item) => item.id === state.portfolioUi.activeId) || state.portfolioUi.items[0];
+  }
+
   function showScreen(which) {
     if (el.loginScreen) el.loginScreen.classList.toggle("active", which === "login");
     if (el.mainScreen) el.mainScreen.classList.toggle("active", which === "main");
@@ -309,23 +487,28 @@
   }
 
   function renderProfile() {
-    if (el.headerName) el.headerName.textContent = state.user.name || "Operator";
-    if (el.settingsName) el.settingsName.textContent = state.user.name || "Operator";
-    if (el.settingsEmail) el.settingsEmail.textContent = state.user.email || "name@astervault.io";
+    const activeName = activePortfolio()?.name || state.user.name || "Richie";
+    if (el.headerName) el.headerName.textContent = activeName;
+    if (el.settingsName) el.settingsName.textContent = state.user.name || "Richie";
+    if (el.settingsEmail) el.settingsEmail.textContent = state.user.email || "richie2broke@proton.me";
   }
 
   function ensureLiveState() {
     const base = baseTotalHoldingsValue();
-    if (typeof state.liveBaseTotal !== "number") state.liveBaseTotal = base;
-    if (typeof state.liveCurrentTotal !== "number") state.liveCurrentTotal = base;
+    if (typeof state.liveBaseTotal !== "number" || !Number.isFinite(state.liveBaseTotal)) {
+      state.liveBaseTotal = base - 12842.37;
+    }
+    if (typeof state.liveCurrentTotal !== "number" || !Number.isFinite(state.liveCurrentTotal)) {
+      state.liveCurrentTotal = base;
+    }
   }
 
   function resetLiveBaseFromPortfolio() {
     const base = baseTotalHoldingsValue();
-    state.liveBaseTotal = base;
+    state.liveBaseTotal = base - 12842.37;
     state.liveCurrentTotal = base;
-    state.liveProfitDollar = 0;
-    state.liveProfitPercent = 0;
+    state.liveProfitDollar = 12842.37;
+    state.liveProfitPercent = Number(((state.liveProfitDollar / state.liveBaseTotal) * 100).toFixed(2));
   }
 
   function nudgeLiveSeries() {
@@ -339,6 +522,7 @@
 
   function tickLiveData() {
     if (state.selectedRange !== "LIVE") return;
+    if (state.settingsUi && state.settingsUi.liveMotion === false) return;
 
     ensureLiveState();
 
@@ -353,12 +537,14 @@
     renderHomeTop();
     renderChart();
     renderAssetsTabHeader();
+    renderSettingsPage();
     saveState();
   }
 
   function startLiveTicker() {
     stopLiveTicker();
     if (state.selectedRange !== "LIVE") return;
+    if (state.settingsUi && state.settingsUi.liveMotion === false) return;
     liveInterval = setInterval(tickLiveData, LIVE_TICK_MS);
   }
 
@@ -375,7 +561,6 @@
     const width = 320;
     const height = 120;
     const pad = 8;
-
     const min = Math.min(...points);
     const max = Math.max(...points);
     const span = max - min || 1;
@@ -415,7 +600,7 @@
     const points = chartSeries[range] || chartSeries.LIVE;
     drawMiniChart(el.chartLinePath, el.chartAreaPath, points);
 
-    el.rangeBtns.forEach((btn) => {
+    $$(".range-btn").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.range === range);
     });
 
@@ -440,18 +625,6 @@
     if (el.dayChangePill) {
       el.dayChangePill.textContent = signedPercent(ch);
       el.dayChangePill.className = `pill ${ch >= 0 ? "up" : "down"}`;
-    }
-  }
-
-  function renderHome() {
-    renderHomeTop();
-    renderChart();
-    renderCrypto();
-    renderStocks();
-    renderMarkets();
-    renderDiscover();
-    if (el.topInfoBanner) {
-      el.topInfoBanner.style.display = state.banners.topInfoBanner ? "flex" : "none";
     }
   }
 
@@ -546,7 +719,7 @@
       const card = document.createElement("div");
       card.className = "list-card discover-card";
       card.innerHTML = `
-        <button class="discover-close" data-discover-close="${cardInfo.id}">✕</button>
+        <button class="discover-close" data-discover-close="${cardInfo.id}" type="button">✕</button>
         <div class="list-row">
           <div class="list-left">
             <div class="list-icon discover">✦</div>
@@ -561,57 +734,16 @@
     });
   }
 
-  function renderAccounts() {
-    if (!el.accountsList) return;
-    el.accountsList.innerHTML = "";
-
-    state.accounts.forEach((acc) => {
-      const card = document.createElement("div");
-      card.className = "list-card";
-      card.innerHTML = `
-        <div class="list-row">
-          <div class="list-left">
-            <div class="list-icon bank">🏦</div>
-            <div class="list-text">
-              <h4 class="list-title">${acc.name}</h4>
-              <p class="list-sub">Linked •••• ${acc.mask || "0000"}</p>
-            </div>
-          </div>
-          <div class="amount">
-            <strong>${money(acc.balance)}</strong>
-            <small>Available</small>
-          </div>
-        </div>
-      `;
-      el.accountsList.appendChild(card);
-    });
-  }
-
-  function renderActivity() {
-    if (!el.activityList) return;
-    el.activityList.innerHTML = "";
-
-    state.activity.forEach((item) => {
-      const card = document.createElement("div");
-      card.className = "list-card";
-      card.innerHTML = `
-        <div class="list-row">
-          <div class="list-left">
-            <div class="list-icon activity">${item.amount >= 0 ? "↑" : "↓"}</div>
-            <div class="list-text">
-              <h4 class="list-title">${item.title}</h4>
-              <p class="list-sub">${item.subtitle}</p>
-              <p class="list-sub">${item.date}</p>
-            </div>
-          </div>
-          <div class="amount">
-            <strong class="${item.amount >= 0 ? "green" : "red"}">${signedMoney(item.amount)}</strong>
-            <small>${item.amount >= 0 ? "Completed" : "Processed"}</small>
-          </div>
-        </div>
-      `;
-      el.activityList.appendChild(card);
-    });
+  function renderHome() {
+    renderHomeTop();
+    renderChart();
+    renderCrypto();
+    renderStocks();
+    renderMarkets();
+    renderDiscover();
+    if (el.topInfoBanner) {
+      el.topInfoBanner.style.display = state.banners.topInfoBanner ? "flex" : "none";
+    }
   }
 
   function renderAssetsTabHeader() {
@@ -640,7 +772,7 @@
     const points = chartSeries[state.selectedRange] || chartSeries.LIVE;
     drawMiniChart(el.assetsChartLinePath, el.assetsChartAreaPath, points);
 
-    el.assetRangeBtns.forEach((btn) => {
+    $$(".asset-range-btn").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.range === state.selectedRange);
     });
   }
@@ -698,7 +830,7 @@
       el.exploreCryptoList.appendChild(card);
     });
 
-    el.exploreFilterBtns.forEach((btn) => {
+    $$("[data-explore-filter]").forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.exploreFilter === state.exploreFilter);
     });
   }
@@ -715,12 +847,7 @@
           ? "history-badge-sell"
           : "history-badge-transfer";
 
-      const badgeText =
-        item.type === "buy"
-          ? "B"
-          : item.type === "sell"
-          ? "S"
-          : "T";
+      const badgeText = item.type === "buy" ? "B" : item.type === "sell" ? "S" : "T";
 
       const card = document.createElement("div");
       card.className = "list-card";
@@ -751,12 +878,495 @@
     renderHistory();
   }
 
+  function ensureAccountsHeaderButton() {
+    if (!el.accountsList || document.getElementById("accountsHeadRow")) return;
+
+    const head = document.createElement("div");
+    head.className = "accounts-head-row";
+    head.id = "accountsHeadRow";
+    head.innerHTML = `
+      <h3>Linked Accounts</h3>
+      <button type="button" class="add-account-btn" id="addAccountBtn">Add Account</button>
+    `;
+
+    el.accountsList.parentNode.insertBefore(head, el.accountsList);
+  }
+
+  function renderAccounts() {
+    if (!el.accountsList) return;
+
+    ensureAccountsHeaderButton();
+    el.accountsList.innerHTML = "";
+
+    state.accounts.forEach((acc) => {
+      const expanded = state.accountUi?.expandedId === acc.id;
+      const txns = Array.isArray(acc.transactions) ? acc.transactions.slice(0, 3) : [];
+
+      const card = document.createElement("div");
+      card.className = `list-card account-card ${expanded ? "expanded" : ""}`;
+      card.setAttribute("data-account-id", acc.id);
+
+      card.innerHTML = `
+        <div class="account-card-top">
+          <div class="list-left">
+            <div class="list-icon bank">🏦</div>
+            <div class="list-text">
+              <h4 class="list-title">${acc.name}</h4>
+              <p class="list-sub">Linked •••• ${acc.mask || "0000"}</p>
+            </div>
+          </div>
+          <div class="amount">
+            <strong>${money(acc.balance)}</strong>
+            <small>Available</small>
+          </div>
+          <div class="account-chevron">⌄</div>
+        </div>
+
+        <div class="account-detail-wrap">
+          <div class="account-detail-grid">
+            <div class="account-detail-pill">
+              <span>Routing</span>
+              <strong>${acc.routing || "0000000••"}</strong>
+            </div>
+            <div class="account-detail-pill">
+              <span>Account</span>
+              <strong>${acc.accountNumber || "0000••••00"}</strong>
+            </div>
+          </div>
+
+          <p class="account-subhead">Recent Transactions</p>
+
+          <div class="account-txn-list">
+            ${
+              txns.length
+                ? txns.map((txn) => `
+                  <div class="account-txn-item">
+                    <div class="account-txn-left">
+                      <strong>${txn.title}</strong>
+                      <small>${txn.date}</small>
+                    </div>
+                    <div class="account-txn-amount ${amountClass(txn.amount)}">
+                      ${signedMoney(txn.amount)}
+                    </div>
+                  </div>
+                `).join("")
+                : `<div class="account-txn-item"><div class="account-txn-left"><strong>No recent transactions</strong></div></div>`
+            }
+          </div>
+        </div>
+      `;
+
+      el.accountsList.appendChild(card);
+    });
+  }
+
+  function activityBadgeClass(type) {
+    if (type === "notification") return "activity-log-badge-notification";
+    if (type === "buy") return "activity-log-badge-buy";
+    if (type === "sell") return "activity-log-badge-sell";
+    return "activity-log-badge-transfer";
+  }
+
+  function activityBadgeText(type, amount) {
+    if (type === "notification") return "✦";
+    if (type === "buy") return "B";
+    if (type === "sell") return "S";
+    return amount >= 0 ? "↑" : "↓";
+  }
+
+  function renderActivity() {
+    if (!el.activityList) return;
+    el.activityList.innerHTML = "";
+
+    state.activity.forEach((item) => {
+      const badgeClass = activityBadgeClass(item.type);
+      const badgeText = activityBadgeText(item.type, item.amount || 0);
+      const isNotification = item.type === "notification";
+
+      const wrap = document.createElement("div");
+      wrap.className = "activity-swipe-wrap";
+      wrap.setAttribute("data-activity-id", item.id);
+
+      wrap.innerHTML = `
+        <div class="activity-delete-bg">Delete</div>
+        <div class="list-card activity-card-swipe ${isNotification ? "notification-card" : ""}">
+          <div class="list-row">
+            <div class="list-left">
+              <div class="list-icon ${badgeClass}">${badgeText}</div>
+              <div class="list-text">
+                <h4 class="list-title">${item.title}</h4>
+                <p class="list-sub">${item.subtitle}</p>
+                <p class="list-sub">${item.date}</p>
+              </div>
+            </div>
+            ${
+              isNotification
+                ? ""
+                : `
+                  <div class="amount">
+                    <strong class="${(item.amount || 0) >= 0 ? "green" : "red"}">${signedMoney(item.amount || 0)}</strong>
+                    <small>${(item.amount || 0) >= 0 ? "Completed" : "Processed"}</small>
+                  </div>
+                `
+            }
+          </div>
+        </div>
+      `;
+
+      el.activityList.appendChild(wrap);
+    });
+
+    initActivitySwipe();
+    renderActivityCryptoMarket();
+    renderActivityTopMovers();
+    renderActivityNews();
+  }
+
+  function drawSparkline(pathEl, points) {
+    if (!pathEl || !points?.length) return;
+
+    const width = 140;
+    const height = 52;
+    const pad = 4;
+    const min = Math.min(...points);
+    const max = Math.max(...points);
+    const span = max - min || 1;
+
+    const coords = points.map((value, index) => {
+      const x = (index / (points.length - 1)) * (width - pad * 2) + pad;
+      const y = height - ((value - min) / span) * (height - pad * 2) - pad;
+      return [x, y];
+    });
+
+    const d = coords
+      .map(([x, y], i) => `${i === 0 ? "M" : "L"} ${x.toFixed(2)} ${y.toFixed(2)}`)
+      .join(" ");
+
+    pathEl.setAttribute("d", d);
+  }
+
+  function renderActivityCryptoMarket() {
+    if (!el.activityCryptoMarket) return;
+    el.activityCryptoMarket.innerHTML = "";
+
+    state.activityMarketCoins.forEach((coin, index) => {
+      const card = document.createElement("div");
+      card.className = "market-mini-card";
+      card.innerHTML = `
+        <div class="market-mini-top">
+          <div>
+            <h4 class="market-mini-name">${coin.name}</h4>
+            <p class="market-mini-sub">${coin.symbol}</p>
+          </div>
+          <div class="${coin.move >= 0 ? "green" : "red"}">${signedPercent(coin.move)}</div>
+        </div>
+        <svg class="market-spark" viewBox="0 0 140 52" preserveAspectRatio="none">
+          <path id="marketSpark${index}" stroke="${coin.move >= 0 ? "#36d684" : "#ff637d"}"></path>
+        </svg>
+        <div class="market-mini-price">
+          <strong>${money(coin.price)}</strong>
+          <small class="${coin.move >= 0 ? "green" : "red"}">${coin.move >= 0 ? "Up" : "Down"}</small>
+        </div>
+      `;
+      el.activityCryptoMarket.appendChild(card);
+
+      const pathEl = card.querySelector(`#marketSpark${index}`);
+      drawSparkline(pathEl, coin.points);
+    });
+  }
+
+  function renderActivityTopMovers() {
+    if (!el.activityTopMovers) return;
+    el.activityTopMovers.innerHTML = "";
+
+    state.activityTopMoversData.forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "mover-mini-card";
+      card.innerHTML = `
+        <h4>${item.symbol}</h4>
+        <p>${item.name}</p>
+        <strong>${money(item.price)}</strong>
+        <small class="${item.move >= 0 ? "green" : "red"}">${signedPercent(item.move)}</small>
+      `;
+      el.activityTopMovers.appendChild(card);
+    });
+  }
+
+  function renderActivityNews() {
+    if (!el.activityNewsList) return;
+    el.activityNewsList.innerHTML = "";
+
+    state.activityNewsItems.forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "list-card news-card";
+      card.innerHTML = `
+        <div class="news-meta">
+          <span>${item.source}</span>
+          <span>•</span>
+          <span>${item.age}</span>
+        </div>
+        <h4>${item.title}</h4>
+      `;
+      el.activityNewsList.appendChild(card);
+    });
+  }
+
+  function nudgeActivityMarket() {
+    if (!Array.isArray(state.activityMarketCoins)) return;
+    if (state.settingsUi && state.settingsUi.charts === false) return;
+
+    state.activityMarketCoins = state.activityMarketCoins.map((coin) => {
+      const last = coin.points[coin.points.length - 1];
+      const delta = Math.round((Math.random() * 4 - 2) * 10) / 10;
+      const next = Math.max(3, Math.min(80, last + delta));
+      const nextPoints = [...coin.points.slice(1), next];
+
+      let nextPrice = coin.price;
+      if (coin.price > 1000) {
+        nextPrice = coin.price + (Math.random() * 60 - 30);
+      } else if (coin.price > 100) {
+        nextPrice = coin.price + (Math.random() * 4 - 2);
+      } else if (coin.price > 1) {
+        nextPrice = coin.price + (Math.random() * 0.08 - 0.04);
+      } else {
+        nextPrice = coin.price + (Math.random() * 0.01 - 0.005);
+      }
+
+      const nextMove = Number((coin.move + (Math.random() * 1.2 - 0.6)).toFixed(2));
+
+      return {
+        ...coin,
+        price: Number(Math.max(0.000001, nextPrice).toFixed(coin.price < 1 ? 6 : 2)),
+        move: nextMove,
+        points: nextPoints
+      };
+    });
+
+    renderActivityCryptoMarket();
+    saveState();
+  }
+
+  function startActivityMarketTicker() {
+    stopActivityMarketTicker();
+    if (state.settingsUi && state.settingsUi.charts === false) return;
+    activityMarketInterval = setInterval(nudgeActivityMarket, ACTIVITY_MARKET_TICK_MS);
+  }
+
+  function stopActivityMarketTicker() {
+    if (activityMarketInterval) {
+      clearInterval(activityMarketInterval);
+      activityMarketInterval = null;
+    }
+  }
+
+  function initActivitySwipe() {
+    const cards = document.querySelectorAll(".activity-card-swipe");
+
+    cards.forEach((card) => {
+      if (card.dataset.swipeBound === "true") return;
+      card.dataset.swipeBound = "true";
+
+      let startX = 0;
+      let currentX = 0;
+      let dragging = false;
+
+      const resetCard = () => {
+        card.classList.remove("swiping");
+        card.style.transform = "translateX(0px)";
+      };
+
+      const onStart = (clientX) => {
+        dragging = true;
+        startX = clientX;
+        currentX = 0;
+        card.classList.add("swiping");
+      };
+
+      const onMove = (clientX) => {
+        if (!dragging) return;
+        currentX = clientX - startX;
+        if (currentX > 0) currentX = 0;
+        if (currentX < -130) currentX = -130;
+        card.style.transform = `translateX(${currentX}px)`;
+      };
+
+      const onEnd = () => {
+        if (!dragging) return;
+        dragging = false;
+        card.classList.remove("swiping");
+
+        if (currentX < -85) {
+          const wrap = card.closest(".activity-swipe-wrap");
+          const id = Number(wrap?.getAttribute("data-activity-id"));
+          card.style.transform = "translateX(-140px)";
+          setTimeout(() => {
+            state.activity = state.activity.filter((item) => Number(item.id) !== id);
+            saveState();
+            renderActivity();
+          }, 140);
+        } else {
+          resetCard();
+        }
+      };
+
+      card.addEventListener("touchstart", (e) => onStart(e.touches[0].clientX), { passive: true });
+      card.addEventListener("touchmove", (e) => onMove(e.touches[0].clientX), { passive: true });
+      card.addEventListener("touchend", onEnd);
+
+      card.addEventListener("mousedown", (e) => onStart(e.clientX));
+      window.addEventListener("mousemove", (e) => onMove(e.clientX));
+      window.addEventListener("mouseup", onEnd);
+    });
+  }
+
+  function settingsUsernameFromEmail(email) {
+    const raw = (email || "richie").split("@")[0].trim();
+    return `@${raw.replace(/\s+/g, "").toLowerCase() || "richie"}`;
+  }
+
+  function renderSettingsPage() {
+    const settingsUsername = $("settingsUsername");
+    const settingsTotalHoldings = $("settingsTotalHoldings");
+    const settingsCryptoPct = $("settingsCryptoPct");
+    const settingsInvestmentsPct = $("settingsInvestmentsPct");
+    const settingsCashPct = $("settingsCashPct");
+    const settingsCryptoBar = $("settingsCryptoBar");
+    const settingsInvestmentsBar = $("settingsInvestmentsBar");
+    const settingsCashBar = $("settingsCashBar");
+
+    if (el.settingsName) el.settingsName.textContent = state.user.name || "Richie";
+    if (el.settingsEmail) el.settingsEmail.textContent = state.user.email || "mail@asterwallet.co";
+    if (settingsUsername) settingsUsername.textContent = settingsUsernameFromEmail(state.user.email);
+    if (settingsTotalHoldings) settingsTotalHoldings.textContent = money(currentDisplayedTotal());
+
+    const cryptoValue = totalCryptoValue();
+    const investmentsValue = totalStockValue();
+    const cashValue = Number(state.wallet.cash) || 0;
+    const total = cryptoValue + investmentsValue + cashValue || 1;
+
+    let cryptoPct = Math.round((cryptoValue / total) * 100);
+    let investmentsPct = Math.round((investmentsValue / total) * 100);
+    let cashPct = Math.round((cashValue / total) * 100);
+
+    const pctTotal = cryptoPct + investmentsPct + cashPct;
+    if (pctTotal !== 100) {
+      cashPct += 100 - pctTotal;
+    }
+
+    if (settingsCryptoPct) settingsCryptoPct.textContent = `${cryptoPct}%`;
+    if (settingsInvestmentsPct) settingsInvestmentsPct.textContent = `${investmentsPct}%`;
+    if (settingsCashPct) settingsCashPct.textContent = `${cashPct}%`;
+
+    if (settingsCryptoBar) settingsCryptoBar.style.width = `${cryptoPct}%`;
+    if (settingsInvestmentsBar) settingsInvestmentsBar.style.width = `${investmentsPct}%`;
+    if (settingsCashBar) settingsCashBar.style.width = `${cashPct}%`;
+
+    document.querySelectorAll("[data-setting-toggle]").forEach((btn) => {
+      const key = btn.getAttribute("data-setting-toggle");
+      btn.classList.toggle("active", !!state.settingsUi[key]);
+    });
+  }
+
+  function renderPortfolioDropdown() {
+    if (!el.portfolioDropdownList) return;
+
+    el.portfolioDropdownList.innerHTML = "";
+
+    state.portfolioUi.items.forEach((item) => {
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = `portfolio-dropdown-item ${item.id === state.portfolioUi.activeId ? "active" : ""}`;
+      btn.setAttribute("data-portfolio-id", item.id);
+      btn.innerHTML = `
+        <span class="portfolio-dropdown-dot"></span>
+        <span class="portfolio-dropdown-label">${item.name}</span>
+      `;
+      el.portfolioDropdownList.appendChild(btn);
+    });
+  }
+
+  function openPortfolioDropdown() {
+    if (!el.portfolioDropdown || !el.portfolioSwitcherBtn) return;
+    el.portfolioDropdown.classList.remove("hidden");
+    el.portfolioSwitcherBtn.setAttribute("aria-expanded", "true");
+  }
+
+  function closePortfolioDropdown() {
+    if (!el.portfolioDropdown || !el.portfolioSwitcherBtn) return;
+    el.portfolioDropdown.classList.add("hidden");
+    el.portfolioSwitcherBtn.setAttribute("aria-expanded", "false");
+  }
+
+  function togglePortfolioDropdown() {
+    if (!el.portfolioDropdown) return;
+    const hidden = el.portfolioDropdown.classList.contains("hidden");
+    if (hidden) openPortfolioDropdown();
+    else closePortfolioDropdown();
+  }
+
+  function openNewPortfolioModal() {
+    if (!el.newPortfolioModal) return;
+    el.newPortfolioModal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+    closePortfolioDropdown();
+    setTimeout(() => {
+      if (el.newPortfolioName) el.newPortfolioName.focus();
+    }, 30);
+  }
+
+  function closeNewPortfolioModal() {
+    if (!el.newPortfolioModal) return;
+    el.newPortfolioModal.classList.add("hidden");
+    if (
+      (!el.manageModal || el.manageModal.classList.contains("hidden")) &&
+      (!el.logoPreviewModal || el.logoPreviewModal.classList.contains("hidden"))
+    ) {
+      document.body.style.overflow = "";
+    }
+    if (el.newPortfolioForm) el.newPortfolioForm.reset();
+  }
+
+  function addPortfolio(name) {
+    const cleanName = (name || "").trim();
+    if (!cleanName) return;
+
+    const newId = `p${Date.now()}`;
+    state.portfolioUi.items.push({
+      id: newId,
+      name: cleanName
+    });
+    state.portfolioUi.activeId = newId;
+    saveState();
+    renderProfile();
+    renderPortfolioDropdown();
+  }
+
+  function openLogoPreview() {
+    if (!el.logoPreviewModal) return;
+    el.logoPreviewModal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeLogoPreview() {
+    if (!el.logoPreviewModal) return;
+    el.logoPreviewModal.classList.add("hidden");
+
+    const manageOpen = el.manageModal && !el.manageModal.classList.contains("hidden");
+    const portfolioOpen = el.newPortfolioModal && !el.newPortfolioModal.classList.contains("hidden");
+
+    if (!manageOpen && !portfolioOpen) {
+      document.body.style.overflow = "";
+    }
+  }
+
   function renderAll() {
     renderProfile();
     renderHome();
     renderEnhancedPortfolioPage();
     renderAccounts();
     renderActivity();
+    renderSettingsPage();
+    renderPortfolioDropdown();
   }
 
   function getCrypto(id) {
@@ -814,12 +1424,32 @@
 
   function closeManage() {
     if (el.manageModal) el.manageModal.classList.add("hidden");
-    document.body.style.overflow = "";
+    if (
+      (!el.newPortfolioModal || el.newPortfolioModal.classList.contains("hidden")) &&
+      (!el.logoPreviewModal || el.logoPreviewModal.classList.contains("hidden"))
+    ) {
+      document.body.style.overflow = "";
+    }
   }
 
   function applyManage() {
-    state.user.name = el.manageName?.value.trim() || "Operator";
-    state.user.email = el.manageEmail?.value.trim() || "name@astervault.io";
+    state.user.name = el.manageName?.value.trim() || "Richie";
+    const newName = el.manageName?.value.trim() || "Richie";
+    state.user.name = newName;
+
+    /* keep the main/default Richie portfolio synced with settings name */
+    if (state.portfolioUi && Array.isArray(state.portfolioUi.items) && state.portfolioUi.items.length) {
+      const primaryPortfolio = state.portfolioUi.items[0];
+
+      if (primaryPortfolio) {
+        primaryPortfolio.name = newName;
+
+        if (!state.portfolioUi.activeId) {
+          state.portfolioUi.activeId = primaryPortfolio.id;
+        }
+      }
+    }
+    state.user.email = el.manageEmail?.value.trim() || "richie2broke@proton.me";
     state.wallet.cash = Number(el.manageCash?.value) || 0;
     state.wallet.available = Number(el.manageAvailable?.value) || 0;
     state.wallet.dayChange = Number(el.manageChange?.value) || 0;
@@ -864,14 +1494,6 @@
       spy.price = Number(el.spyPrice?.value) || 0;
     }
 
-    if (!state.accounts[0]) state.accounts[0] = { id: "a1", name: "Northline Reserve", balance: 0, mask: "4082" };
-    if (!state.accounts[1]) state.accounts[1] = { id: "a2", name: "Atlas Premier", balance: 0, mask: "1129" };
-
-    state.accounts[0].name = el.acc1Name?.value.trim() || "Northline Reserve";
-    state.accounts[0].balance = Number(el.acc1Balance?.value) || 0;
-    state.accounts[1].name = el.acc2Name?.value.trim() || "Atlas Premier";
-    state.accounts[1].balance = Number(el.acc2Balance?.value) || 0;
-
     resetLiveBaseFromPortfolio();
     saveState();
     renderAll();
@@ -884,14 +1506,30 @@
       loggedIn: state.user.loggedIn
     };
 
+    const preservedPortfolios = clone(state.portfolioUi);
+
     state = clone(defaultState);
     state.user = preservedUser;
+    state.portfolioUi = preservedPortfolios;
 
     resetLiveBaseFromPortfolio();
     saveState();
     renderAll();
     closeManage();
-    startLiveTicker();
+    closeNewPortfolioModal();
+    closePortfolioDropdown();
+    closeLogoPreview();
+
+    if (state.user.loggedIn) {
+      showScreen("main");
+      setTab("home");
+      startLiveTicker();
+      startActivityMarketTicker();
+    } else {
+      showScreen("login");
+      stopLiveTicker();
+      stopActivityMarketTicker();
+    }
   }
 
   function handleLogin(e) {
@@ -910,16 +1548,27 @@
 
     state.user.email = email;
     if (!state.user.name || state.user.name === "Operator") {
-      state.user.name = formatted || "Operator";
+      state.user.name = formatted || "Richie";
     }
-    state.user.loggedIn = true;
 
+    if (!state.portfolioUi.items.length) {
+      state.portfolioUi.items = [{ id: "p1", name: formatted || "Richie" }];
+      state.portfolioUi.activeId = "p1";
+    } else if (state.portfolioUi.items[0] && state.portfolioUi.items[0].name === "Richie" && formatted) {
+      state.portfolioUi.items[0].name = formatted;
+      if (state.portfolioUi.activeId === "p1") {
+        state.portfolioUi.activeId = state.portfolioUi.items[0].id;
+      }
+    }
+
+    state.user.loggedIn = true;
     resetLiveBaseFromPortfolio();
     saveState();
     renderAll();
     showScreen("main");
     setTab("home");
     startLiveTicker();
+    startActivityMarketTicker();
 
     if (el.loginPassword) el.loginPassword.value = "";
   }
@@ -928,56 +1577,327 @@
     state.user.loggedIn = false;
     saveState();
     stopLiveTicker();
+    stopActivityMarketTicker();
+    closePortfolioDropdown();
+    closeNewPortfolioModal();
+    closeLogoPreview();
     showScreen("login");
+
+    if (el.loginPassword) el.loginPassword.value = "";
   }
 
-  function bindEvents() {
+  function bindRangeEvents() {
+    $$(".range-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.selectedRange = btn.dataset.range;
+        if (state.selectedRange === "LIVE") {
+          ensureLiveState();
+          startLiveTicker();
+        } else {
+          stopLiveTicker();
+        }
+        saveState();
+        renderHomeTop();
+        renderChart();
+        renderAssetsTabHeader();
+        renderSettingsPage();
+      });
+    });
+
+    $$(".asset-range-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.selectedRange = btn.dataset.range;
+        if (state.selectedRange === "LIVE") {
+          ensureLiveState();
+          startLiveTicker();
+        } else {
+          stopLiveTicker();
+        }
+        saveState();
+        renderHomeTop();
+        renderChart();
+        renderAssetsTabHeader();
+        renderSettingsPage();
+      });
+    });
+  }
+
+  function bindExploreFilterEvents() {
+    $$("[data-explore-filter]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.exploreFilter = btn.dataset.exploreFilter;
+        saveState();
+        renderExploreCrypto();
+      });
+    });
+  }
+
+  function bindAccountEvents() {
+    if (accountEventsBound) return;
+    accountEventsBound = true;
+
+    document.addEventListener("click", (e) => {
+      const addAccountBtn = e.target.closest("#addAccountBtn");
+      if (addAccountBtn) return;
+
+      const accountCard = e.target.closest(".account-card");
+      if (!accountCard) return;
+
+      const accountId = accountCard.getAttribute("data-account-id");
+      if (!accountId) return;
+
+      state.accountUi.expandedId = state.accountUi.expandedId === accountId ? null : accountId;
+      saveState();
+      renderAccounts();
+    });
+  }
+
+  function bindSettingsEvents() {
+    if (settingsEventsBound) return;
+    settingsEventsBound = true;
+
+    document.addEventListener("click", (e) => {
+      const toggle = e.target.closest("[data-setting-toggle]");
+      if (!toggle) return;
+
+      const key = toggle.getAttribute("data-setting-toggle");
+      if (!key) return;
+
+      state.settingsUi[key] = !state.settingsUi[key];
+      saveState();
+      renderSettingsPage();
+
+      if (key === "charts") {
+        if (state.settingsUi.charts) {
+          startActivityMarketTicker();
+        } else {
+          stopActivityMarketTicker();
+        }
+      }
+
+      if (key === "liveMotion") {
+        if (state.settingsUi.liveMotion && state.selectedRange === "LIVE") {
+          startLiveTicker();
+        } else {
+          stopLiveTicker();
+        }
+      }
+
+      if (key === "notifications" && state.settingsUi.notifications) {
+        scheduleTimedBanner(60000);
+      }
+    });
+  }
+
+  function bindPortfolioEvents() {
+    if (portfolioEventsBound) return;
+    portfolioEventsBound = true;
+
+    if (el.portfolioSwitcherBtn) {
+      el.portfolioSwitcherBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        togglePortfolioDropdown();
+      });
+    }
+
+    if (el.addPortfolioBtn) {
+      el.addPortfolioBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        openNewPortfolioModal();
+      });
+    }
+
+    if (el.closeNewPortfolio) {
+      el.closeNewPortfolio.addEventListener("click", closeNewPortfolioModal);
+    }
+
+    const newPortfolioBackdrop = document.querySelector('[data-close-new-portfolio="true"]');
+    if (newPortfolioBackdrop) {
+      newPortfolioBackdrop.addEventListener("click", closeNewPortfolioModal);
+    }
+
+    if (el.newPortfolioForm) {
+      el.newPortfolioForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = el.newPortfolioName?.value || "";
+        if (!name.trim()) return;
+        addPortfolio(name);
+        closeNewPortfolioModal();
+      });
+    }
+
+    document.addEventListener("click", (e) => {
+      const portfolioItem = e.target.closest(".portfolio-dropdown-item");
+      if (portfolioItem) {
+        const portfolioId = portfolioItem.getAttribute("data-portfolio-id");
+        if (portfolioId) {
+          state.portfolioUi.activeId = portfolioId;
+          saveState();
+          renderProfile();
+          renderPortfolioDropdown();
+          closePortfolioDropdown();
+        }
+        return;
+      }
+
+      const insideSwitcher = e.target.closest(".portfolio-switcher-wrap");
+      const insideModal = e.target.closest("#newPortfolioModal");
+      const insideAvatar = e.target.closest(".portfolio-avatar-wrap");
+      if (!insideSwitcher && !insideModal && !insideAvatar) {
+        closePortfolioDropdown();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closePortfolioDropdown();
+        if (el.newPortfolioModal && !el.newPortfolioModal.classList.contains("hidden")) {
+          closeNewPortfolioModal();
+        }
+      }
+    });
+  }
+
+  function bindLogoPreviewEvents() {
+    if (logoPreviewEventsBound) return;
+    logoPreviewEventsBound = true;
+
+    const openFromAvatar = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      closePortfolioDropdown();
+      openLogoPreview();
+    };
+
+    if (el.portfolioAvatarWrap) {
+      el.portfolioAvatarWrap.addEventListener("click", openFromAvatar);
+      el.portfolioAvatarWrap.addEventListener("touchend", openFromAvatar, { passive: false });
+    }
+
+    if (el.portfolioAvatar) {
+      el.portfolioAvatar.addEventListener("click", openFromAvatar);
+      el.portfolioAvatar.addEventListener("touchend", openFromAvatar, { passive: false });
+    }
+
+    if (el.logoPreviewBackdrop) {
+      el.logoPreviewBackdrop.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeLogoPreview();
+      });
+      el.logoPreviewBackdrop.addEventListener("touchend", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeLogoPreview();
+      }, { passive: false });
+    }
+
+    if (el.logoPreviewModal) {
+      el.logoPreviewModal.addEventListener("click", (e) => {
+        if (
+          e.target === el.logoPreviewModal ||
+          e.target === el.logoPreviewBackdrop
+        ) {
+          closeLogoPreview();
+        }
+      });
+
+      el.logoPreviewModal.addEventListener("touchend", (e) => {
+        if (
+          e.target === el.logoPreviewModal ||
+          e.target === el.logoPreviewBackdrop
+        ) {
+          e.preventDefault();
+          closeLogoPreview();
+        }
+      }, { passive: false });
+    }
+
+    if (el.logoPreviewContent) {
+      el.logoPreviewContent.addEventListener("click", (e) => e.stopPropagation());
+      el.logoPreviewContent.addEventListener("touchend", (e) => e.stopPropagation(), { passive: true });
+    }
+
+    if (el.logoPreviewImage) {
+      el.logoPreviewImage.addEventListener("click", (e) => e.stopPropagation());
+      el.logoPreviewImage.addEventListener("touchend", (e) => e.stopPropagation(), { passive: true });
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && el.logoPreviewModal && !el.logoPreviewModal.classList.contains("hidden")) {
+        closeLogoPreview();
+      }
+    });
+  }
+
+  function getVisibleBannerElement() {
+    if (!el.topInfoBanner) return null;
+    const isHidden =
+      el.topInfoBanner.style.display === "none" ||
+      window.getComputedStyle(el.topInfoBanner).display === "none";
+    return isHidden ? null : el.topInfoBanner;
+  }
+
+  function scheduleTimedBanner(delay = 60000) {
+    if (!el.topInfoBanner) return;
+    if (state.settingsUi && state.settingsUi.notifications === false) return;
+
+    if (timedBannerTimeout) {
+      clearTimeout(timedBannerTimeout);
+      timedBannerTimeout = null;
+    }
+
+    timedBannerTimeout = setTimeout(() => {
+      if (state.settingsUi && state.settingsUi.notifications === false) return;
+
+      const visibleBanner = getVisibleBannerElement();
+      if (visibleBanner) {
+        scheduleTimedBanner(15000);
+        return;
+      }
+
+      const nextBanner = timedBannerPool[Math.floor(Math.random() * timedBannerPool.length)];
+      const titleEl = el.topInfoBanner.querySelector(".info-title");
+      const textEl = el.topInfoBanner.querySelector(".info-text");
+      const ctaEl = el.topInfoBanner.querySelector(".text-link");
+
+      if (titleEl) titleEl.textContent = nextBanner.title;
+      if (textEl) textEl.textContent = nextBanner.text;
+      if (ctaEl) ctaEl.textContent = nextBanner.cta;
+
+      state.banners.topInfoBanner = true;
+      saveState();
+      renderHome();
+
+      scheduleTimedBanner(45000);
+    }, delay);
+  }
+
+  function injectSectionPlusButton(targetId, btnId) {
+    const target = $(targetId);
+    if (!target) return;
+
+    const sectionHead = target.previousElementSibling;
+    if (!sectionHead || sectionHead.querySelector(`#${btnId}`)) return;
+
+    sectionHead.classList.add("market-section-head");
+
+    const addBtn = document.createElement("button");
+    addBtn.type = "button";
+    addBtn.id = btnId;
+    addBtn.className = "market-add-btn";
+    addBtn.textContent = "+";
+
+    sectionHead.appendChild(addBtn);
+  }
+
+  function bindGlobalEvents() {
     if (el.loginForm) {
       el.loginForm.addEventListener("submit", handleLogin);
     }
 
     el.navBtns.forEach((btn) => {
       btn.addEventListener("click", () => setTab(btn.dataset.tab));
-    });
-
-    el.rangeBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        state.selectedRange = btn.dataset.range;
-        if (state.selectedRange === "LIVE") {
-          ensureLiveState();
-          startLiveTicker();
-        } else {
-          stopLiveTicker();
-        }
-        saveState();
-        renderHomeTop();
-        renderChart();
-        renderAssetsTabHeader();
-      });
-    });
-
-    el.assetRangeBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        state.selectedRange = btn.dataset.range;
-        if (state.selectedRange === "LIVE") {
-          ensureLiveState();
-          startLiveTicker();
-        } else {
-          stopLiveTicker();
-        }
-        saveState();
-        renderHomeTop();
-        renderChart();
-        renderAssetsTabHeader();
-      });
-    });
-
-    el.exploreFilterBtns.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        state.exploreFilter = btn.dataset.exploreFilter;
-        saveState();
-        renderExploreCrypto();
-      });
     });
 
     if (el.openManageTop) el.openManageTop.addEventListener("click", openManage);
@@ -990,7 +1910,10 @@
         e.preventDefault();
         applyManage();
         closeManage();
-        startLiveTicker();
+        if (state.user.loggedIn) {
+          startLiveTicker();
+          renderSettingsPage();
+        }
       });
     }
 
@@ -1003,6 +1926,10 @@
         state.banners[closeId] = false;
         saveState();
         renderHome();
+
+        if (closeId === "topInfoBanner") {
+          scheduleTimedBanner(60000);
+        }
       }
 
       const discoverId = e.target.getAttribute("data-discover-close");
@@ -1021,97 +1948,32 @@
   }
 
   function init() {
-    bindEvents();
+    bindGlobalEvents();
+    bindRangeEvents();
+    bindExploreFilterEvents();
+    bindAccountEvents();
+    bindSettingsEvents();
+    bindPortfolioEvents();
+    bindLogoPreviewEvents();
+
     resetLiveBaseFromPortfolio();
     renderAll();
+
+    injectSectionPlusButton("activityCryptoMarket", "activityMarketAddBtn");
+    injectSectionPlusButton("activityTopMovers", "activityTopMoversAddBtn");
 
     if (state.user.loggedIn) {
       showScreen("main");
       setTab("home");
       startLiveTicker();
+      startActivityMarketTicker();
+      scheduleTimedBanner(60000);
     } else {
       showScreen("login");
       stopLiveTicker();
+      stopActivityMarketTicker();
     }
   }
 
   init();
-
-  /* ===== PATCH: timed notification pop-up ===== */
-const timedBannerPool = [
-  {
-    title: "Did you know?",
-    text: "Market screeners can help uncover strong momentum names before the crowd catches on.",
-    cta: "Explore momentum picks"
-  },
-  {
-    title: "Portfolio Insight",
-    text: "Your watchlist can be used to track fast movers across crypto, equities, and ETFs.",
-    cta: "View watchlist ideas"
-  },
-  {
-    title: "Trending Now",
-    text: "Some investors are rotating into high-beta names and digital assets with stronger recent volume.",
-    cta: "Explore trending markets"
-  },
-  {
-    title: "Analyst Update",
-    text: "Consensus ratings can help you compare names receiving stronger institutional attention.",
-    cta: "See analyst highlights"
-  }
-];
-
-let timedBannerTimeout = null;
-
-function getVisibleBannerElement() {
-  if (!el.topInfoBanner) return null;
-  const isHidden =
-    el.topInfoBanner.style.display === "none" ||
-    window.getComputedStyle(el.topInfoBanner).display === "none";
-  return isHidden ? null : el.topInfoBanner;
-}
-
-function scheduleTimedBanner(delay = 60000) {
-  if (!el.topInfoBanner) return;
-
-  if (timedBannerTimeout) {
-    clearTimeout(timedBannerTimeout);
-    timedBannerTimeout = null;
-  }
-
-  timedBannerTimeout = setTimeout(() => {
-    const visibleBanner = getVisibleBannerElement();
-
-    if (visibleBanner) {
-      scheduleTimedBanner(15000);
-      return;
-    }
-
-    const nextBanner =
-      timedBannerPool[Math.floor(Math.random() * timedBannerPool.length)];
-
-    const titleEl = el.topInfoBanner.querySelector(".info-title");
-    const textEl = el.topInfoBanner.querySelector(".info-text");
-    const ctaEl = el.topInfoBanner.querySelector(".text-link");
-
-    if (titleEl) titleEl.textContent = nextBanner.title;
-    if (textEl) textEl.textContent = nextBanner.text;
-    if (ctaEl) ctaEl.textContent = nextBanner.cta;
-
-    state.banners.topInfoBanner = true;
-    saveState();
-    renderHome();
-
-    scheduleTimedBanner(45000);
-  }, delay);
-}
-
-document.addEventListener("click", (e) => {
-  const closeId = e.target.getAttribute("data-close");
-  if (closeId === "topInfoBanner") {
-    scheduleTimedBanner(60000);
-  }
-});
-
-scheduleTimedBanner(60000);
 })();
